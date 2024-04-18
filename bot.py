@@ -11,13 +11,24 @@ import time
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
-@bot.event
-async def on_ready():
-    print(f'Logged on as {bot.user}!')
-
 intents = discord.Intents.default()
 intents.message_content = True
+bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
+
+
+@bot.tree.command(
+    name="commandname",
+    description="My first application Command",
+)
+async def first_command(interaction):
+    await interaction.response.send_message("Hello!")
+
+
+@bot.event
+async def on_ready():
+    await bot.tree.sync()
+    bot.change_presence(activity=discord.Game("It's Modding Time"))
+    print(f'Logged on as {bot.user}!')
 
 #Kør botten
 bot.run(TOKEN)
