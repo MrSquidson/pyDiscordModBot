@@ -1,5 +1,5 @@
 import os
-
+import random
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -27,7 +27,11 @@ async def first_command(interaction):
 @bot.event
 async def on_ready():
     await bot.tree.sync()
-    bot.change_presence(activity=discord.Game("It's Modding Time"))
+    chance = random.randint(0,1)
+    if chance == 0:
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Commands"))
+    elif chance == 1:
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="you"))
     print(f'Logged on as {bot.user}!')
 
 #Kør botten
