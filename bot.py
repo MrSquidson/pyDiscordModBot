@@ -23,15 +23,26 @@ bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
 async def first_command(interaction):
     await interaction.response.send_message("Hello!")
 
+# DO NOT TOUCH, WE DON'T WHAT WE DID, BUT IT WORKS NOW!!!!!
+# Chooses one of the Random Activities(tm)
+async def randact():
+    randAct = True
+    while randAct == True:
+        chance = random.randint(0,1)
+        if chance == 0: # Makes the bot activity say that it's "Listening to Commands"
+            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Commands"))
+            print('0')
+            randAct = False
+        elif chance == 1: # Makes the bot activity as that it's "Watching you"
+            await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="you"))
+            print('1')
+            randAct = False
+
 
 @bot.event
 async def on_ready():
     await bot.tree.sync()
-    chance = random.randint(0,1)
-    if chance == 0:
-        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Commands"))
-    elif chance == 1:
-        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="you"))
+    await randact()
     print(f'Logged on as {bot.user}!')
 
 #Kør botten
