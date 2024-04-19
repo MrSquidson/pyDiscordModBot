@@ -31,11 +31,11 @@ async def randact():
         chance = random.randint(0,1)
         if chance == 0: # Makes the bot activity say that it's "Listening to Commands"
             await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Commands"))
-            print('0')
+            print('Activity set to: Listening to Commands')
             randAct = False
         elif chance == 1: # Makes the bot activity as that it's "Watching you"
             await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="you"))
-            print('1')
+            print('Activity set to: Watching you')
             randAct = False
 
 
