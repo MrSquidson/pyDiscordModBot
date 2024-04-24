@@ -5,9 +5,11 @@ from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
 
-import time
+option = app_commands.AppCommand.options
 
-#Indlæser .env filen så den kan bruges
+import time
+# I need a comment...
+# Indlæser .env filen så den kan bruges
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
@@ -15,13 +17,28 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
 
+# # Test cmd that comes with library
+# @bot.tree.command(
+#     name="commandname",
+#     description="My first application Command",
+# )
+# async def first_command(interaction):
+#     await interaction.response.send_message("Hello!")
 
 @bot.tree.command(
-    name="commandname",
-    description="My first application Command",
+    name="purgemsg",
+    description="A command that deletes a specified message",
 )
-async def first_command(interaction):
-    await interaction.response.send_message("Hello!")
+@app_commands.describe(
+    amount="Amount of messages you want purged"
+)
+@app_commands.describe(
+    reason="The reason why you're purging messages"
+)
+async def delete_command(interaction, amount: int, reason: str):
+    deleted = await discord.TextChannel.purge(limit={amount}, reason={reason})
+    await interaction.response.send_message(f"Deleted {deleted} Messages!", ephemeral=True)
+    
 
 # DO NOT TOUCH, WE DON'T WHAT WE DID, BUT IT WORKS NOW!!!!!
 # Chooses one of the Random Activities(tm)
