@@ -18,12 +18,12 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
 
 # # Test cmd that comes with library
-# @bot.tree.command(
-#     name="commandname",
-#     description="My first application Command",
-# )
-# async def first_command(interaction):
-#     await interaction.response.send_message("Hello!")
+@bot.tree.command(
+    name="commandname",
+    description="My first application Command",
+)
+async def first_command(interaction):
+    await interaction.response.send_message("Hello!")
 
 
 
@@ -45,19 +45,22 @@ async def delete_command(interaction: discord.Interaction, amount: int,reason: s
     deleted = await channel.purge(limit=amount, reason = reason)
     await interaction.response.send_message(f"Deleted {len(deleted)} Messages!", ephemeral=True)
 
+
 # VIRKER IKKE ENDNU
-# @bot.tree.command(
-#         name="sync",
-#         description="Syncs discord commands",
-#         guild=discord.Object(id=867851000286806016)
-# )
-# async def sync(interaction: discord.Interaction):
-#     try:
-#         await interaction.response.send_message('Syncing...')
-#         await bot.tree.sync()
-#         await interaction.response.send_message('Synced!')
-#     except:
-#         await interaction.response.send_message('Syncing Failed')
+# Sync Kommando - Syncronisere det nuværende kommando træ med det vi arbejder på.
+@bot.tree.command(
+        name="sync_cmd",
+        description="Syncs discord commands"
+)
+async def sync(interaction: discord.Interaction):
+    try:
+        await interaction.response.send_message('Syncing...', ephemeral=True)
+        synced = await bot.tree.sync()
+        print(f'User synced {len(synced)} commands') 
+        await interaction.followup.send(f'Synced {len(synced)} commands! :D', ephemeral=True)
+    except:
+        print(Exception)
+        await interaction.followup.send('Syncing Failed :c', ephemeral=True)
 
 # DO NOT TOUCH, WE DON'T WHAT WE DID, BUT IT WORKS NOW!!!!!
 # Chooses one of the Random Activities(tm)
@@ -76,11 +79,14 @@ async def randact():
 
 
 @bot.event
-async def on_ready():
-    synced = await bot.tree.sync()
+async def on_ready(): 
     await randact()
     print(f'Logged on as {bot.user}!')
-    print(f'synced {len(synced)}')
+    try:
+        synced = await bot.tree.sync()
+        print(f'Synced {len(synced)}')
+    except Exception as e:
+        print(e)
 
 #Kør botten
 bot.run(TOKEN)
