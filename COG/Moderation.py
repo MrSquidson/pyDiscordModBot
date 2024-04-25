@@ -11,6 +11,7 @@ class treeCMD(commands.Cog):
     async def on_ready(self):
        synced = await self.bot.tree.sync() 
     
+    # Simple test command
     @app_commands.command(
         name="commandname",
         description="My first application Command",
