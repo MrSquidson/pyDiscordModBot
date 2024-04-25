@@ -26,17 +26,23 @@ bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
 # )
 # async def first_command(interaction):
 #     await interaction.response.send_message("Hello!")
-    # Sync Kommando - Syncronisere det nuværende kommando træ med det vi arbejder på.
+    
+
+# Sync Kommando - Syncronisere det nuværende kommando træ med det vi arbejder på.
 @bot.tree.command(
     name="sync_cmd",
-    description="Syncs discord commands"
+    description="Syncs discord commands",
 )
-async def sync(self, interaction: discord.Interaction):
+async def sync(interaction: discord.Interaction):
     try:
         await interaction.response.send_message('Syncing...', ephemeral=True)
-        synced = await self.bot.tree.sync()
-        print(f'User synced {len(synced)} commands') 
-        await interaction.followup.send(f'Synced {len(synced)} commands! :D', ephemeral=True)
+        for filename in os.listdir('./COG'):
+            i = 0
+            if filename.endswith('.py'):
+                i += 1
+                await bot.reload_extension(f'COG.{filename[:-3]}')
+                print(f'Synced {i} cog')
+                await interaction.followup.send(f'Synced {i} cogs! :D', ephemeral=True)
     except:
         print(Exception)
         await interaction.followup.send('Syncing Failed :c', ephemeral=True)
