@@ -4,8 +4,6 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
-import treeCMD
-import Database
 
 option = app_commands.AppCommand.options
 
@@ -22,44 +20,21 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
 
 # # Test cmd that comes with library
+# @bot.tree.command(
+#     name="commandname",
+#     description="My first application Command",
+# )
+# async def first_command(interaction):
+#     await interaction.response.send_message("Hello!")
+    # Sync Kommando - Syncronisere det nuværende kommando træ med det vi arbejder på.
 @bot.tree.command(
-    name="commandname",
-    description="My first application Command",
+    name="sync_cmd",
+    description="Syncs discord commands"
 )
-async def first_command(interaction):
-    await interaction.response.send_message("Hello!")
-
-
-
-# #Purge Messages indiscriminately in a channel
-@bot.tree.command(
-    name="purgemsg",
-    description="A command that deletes a specified message",
-
-)
-@app_commands.describe(
-    amount="Amount of messages you want purged"
-)
-@app_commands.describe(
-    reason="The reason why you're purging messages"
-)
-async def delete_command(interaction: discord.Interaction, amount: int,reason: str):
-    channel = interaction.channel
-
-    deleted = await channel.purge(limit=amount, reason = reason)
-    await interaction.response.send_message(f"Deleted {len(deleted)} Messages!", ephemeral=True)
-
-
-# VIRKER IKKE ENDNU
-# Sync Kommando - Syncronisere det nuværende kommando træ med det vi arbejder på.
-@bot.tree.command(
-        name="sync_cmd",
-        description="Syncs discord commands"
-)
-async def sync(interaction: discord.Interaction):
+async def sync(self, interaction: discord.Interaction):
     try:
         await interaction.response.send_message('Syncing...', ephemeral=True)
-        synced = await bot.tree.sync()
+        synced = await self.bot.tree.sync()
         print(f'User synced {len(synced)} commands') 
         await interaction.followup.send(f'Synced {len(synced)} commands! :D', ephemeral=True)
     except:
@@ -85,12 +60,18 @@ async def randact():
 @bot.event
 async def on_ready(): 
     await randact()
+    i = 0
+    for filename in os.listdir('./COG'):
+        if filename.endswith('.py'):
+            i += 1
+            await bot.load_extension(f'COG.{filename[:-3]}')
+            print(f'Synced {i} cog')
     print(f'Logged on as {bot.user}!')
-    try:
-        synced = await bot.tree.sync()
-        print(f'Synced {len(synced)}')
-    except Exception as e:
-        print(e)
+    # try:
+    #     synced = await bot.tree.sync()
+    #     print(f'Synced {len(synced)}')
+    # except Exception as e:
+    #     print(e)
 
 #Kør botten
 bot.run(TOKEN)
