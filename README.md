@@ -8,7 +8,8 @@ In order to run the files you need a couple of things
    1. Open your file explorer in the cloned directory
    2. Type or copy paste 'py -m pip install -r reqs.txt'
 3. For use. You need to set up a .env file containing your bot's secret token 
-   (Which can be retrieved on [https://discord.com/developers/applications])
+
+   (Which can be retrieved on [https://discord.com/developers/applications](https://discord.com/developers/applications))
    - This file MUST be in the same directory as the bot.py file
 5. Invite your bot to your own server
 6. Enjoy
