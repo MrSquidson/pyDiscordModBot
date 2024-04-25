@@ -25,9 +25,13 @@ bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
 # async def first_command(interaction):
 #     await interaction.response.send_message("Hello!")
 
+
+
+# #Purge Messages indiscriminately in a channel
 @bot.tree.command(
     name="purgemsg",
     description="A command that deletes a specified message",
+
 )
 @app_commands.describe(
     amount="Amount of messages you want purged"
@@ -35,10 +39,25 @@ bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
 @app_commands.describe(
     reason="The reason why you're purging messages"
 )
-async def delete_command(interaction, amount: int, reason: str):
-    deleted = await discord.TextChannel.purge(limit={amount}, reason={reason})
-    await interaction.response.send_message(f"Deleted {deleted} Messages!", ephemeral=True)
-    
+async def delete_command(interaction: discord.Interaction, amount: int,reason: str):
+    channel = interaction.channel
+
+    deleted = await channel.purge(limit=amount, reason = reason)
+    await interaction.response.send_message(f"Deleted {len(deleted)} Messages!", ephemeral=True)
+
+# VIRKER IKKE ENDNU
+# @bot.tree.command(
+#         name="sync",
+#         description="Syncs discord commands",
+#         guild=discord.Object(id=867851000286806016)
+# )
+# async def sync(interaction: discord.Interaction):
+#     try:
+#         await interaction.response.send_message('Syncing...')
+#         await bot.tree.sync()
+#         await interaction.response.send_message('Synced!')
+#     except:
+#         await interaction.response.send_message('Syncing Failed')
 
 # DO NOT TOUCH, WE DON'T WHAT WE DID, BUT IT WORKS NOW!!!!!
 # Chooses one of the Random Activities(tm)
@@ -58,9 +77,10 @@ async def randact():
 
 @bot.event
 async def on_ready():
-    await bot.tree.sync()
+    synced = await bot.tree.sync()
     await randact()
     print(f'Logged on as {bot.user}!')
+    print(f'synced {len(synced)}')
 
 #Kør botten
 bot.run(TOKEN)
