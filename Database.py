@@ -10,11 +10,11 @@ class Database:
     def __init__(self) -> None:
         #Laver en filepath til brug senere
         pass
-    
-    def modAction(self, guildID:int, modID:int, offenderID:int, timeStart:int, timeEnd:int, action:str):
+
+    def modAction(self, filepath, guildID:int, modID:int, offenderID:int, timeStart:int, timeEnd:int, action:str):
         field_names = ['modID', 'offenderID', 'timeStart', 'timeEnd', 'action']
 
-        if not os.path.exists(os.path.join('./DB', guildID, 'punishments.csv')): # Hvis './DB/GuildID/punishments.csv' ikke findes
+        if not os.path.exists(os.path.join(filepath, 'punishments.csv')): # Hvis './DB/GuildID/punishments.csv' ikke findes
             with open('punishments.csv','w', newline='') as csvfile: #Opret ny csv fil
                 writer = csv.DictWriter(csvfile, fieldnames=field_names) # Med field_names i headeren (indsætter også header)
                 writer.writeheader()
