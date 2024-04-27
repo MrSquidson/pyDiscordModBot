@@ -1,5 +1,7 @@
 # Discord.py Mod bot
 A discord moderation bot made for a school project using Discord.py
+## !! - This Repo is a Work in Progress - !!
+
 ## Setup
 In order to run the files you need a couple of things
 1. A working version of python. We used 3.10.3+
