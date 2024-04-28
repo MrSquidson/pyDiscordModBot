@@ -28,13 +28,17 @@ class treeCMD(commands.Cog):
     @app_commands.describe(
         amount="Amount of messages you want purged"
     )
-    @app_commands.describe(
-        reason="The reason why you're purging messages"
-    )  
-    async def delete_command(self, interaction: discord.Interaction, amount: int,reason: str):
+
+   
+    # @app_commands.describe(
+    #     reason="The reason why you're purging messages"
+    # )  
+
+    async def delete_command(self, interaction: discord.Interaction, amount: int, reason: str):
         self.channel = interaction.channel
-        deleted = await self.channel.purge(limit=amount, reason = reason)
-        await interaction.response.send_message(f"Deleted {len(deleted)} Messages!", ephemeral=True)
+        await interaction.response.send_message('Attempting to purge messages!', ephemeral=True)
+        dltMsgAmount = await self.channel.purge(limit=amount, reason=reason)
+        await interaction.followup.send(f'Deleted {len(dltMsgAmount)} Messages!', ephemeral=True)
 
 
 
