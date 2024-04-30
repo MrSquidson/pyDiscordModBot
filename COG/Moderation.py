@@ -41,37 +41,39 @@ class treeCMD(commands.Cog):
     @app_commands.command(name='user_info', description='Get info of any user in this server')
     @app_commands.describe(user='select a user')
 
-    async def user_info(self, interaction: discord.Interaction, user: discord.Member):
-        # roles = []
-        # if not user:
-        #     user =  interaction.message.author
-        # for roles in interaction.user.roles:
-        #     roles.append(str(interaction.role.mention))
-        self.embed = discord.Embed(color=user.color, timestamp=interaction.message.created_at)
-        self.embed.author(name='Username', value=user)
+    async def user_info(self, interaction: discord.Interaction, user: Member):
+        self.embed = discord.Embed(title=f"User Info about {user}", color=user.color, timestamp=interaction.message.created_at)
+        self.embed.author(name='Username', value=user.name)
         self.embed.thumbnail(url=user.avatar.url)
+        self.embed.add_field(name='Discord @', value=user.discriminator)
+        self.embed.add_field(name='UserID', value=user.id)
+        self.embed.add_field(name='Current status', value=user.status)
+        self.embed.add_field(name='Server Join', value=user.joined_at)
+        self.embed.add_field(name='Account age', value=user.created_at)
+
         self.embed.footer()
 
         pass
 
     # Ban command and stuff
-    @app_commands.command(name='ban', description='Ban a user')
-    @has_permissions(ban_members = True)
-    async def ban(self, interaction: discord.Interaction, user: discord.memeber, *, reason=None):
-        try:
-            await interaction.user.ban(reason=reason)
-            await interaction.send(f'User {user} has been banned')
-        except Exception as e:
-            print(e)
-            await interaction.send('Cannot ban user')
-    # If a user who is not allowed to ban try's the ban command    
-    @ban.error
-    async def ban_error(interaction, error): 
-        #try:??
-            if isinstance(error, commands.MissingPermissions):
-                await interaction.send ("You do not have permession to ban")
+    # @app_commands.command(name='ban', description='Ban a user')
+    # @app_commands.describe(name='reason', description='give a reason for ban')
+    # @has_permissions(ban_members = True)
+    # async def ban(self, interaction: discord.Interaction, user: Member, *, reason: str):
+    #     try:
+    #         await interaction.user.ban(reason=reason)
+    #         await interaction.response.send_message(f'User {user} has been banned')
+    #     except Exception as e:
+    #         print(e)
+    #         await interaction.response.send_message('Cannot ban user')
+    # # If a user who is not allowed to ban try's the ban command    
+    # @ban.error
+    # async def ban_error(interaction, error): 
+    #     #try:??
+    #         if isinstance(error, commands.MissingPermissions):
+    #             await interaction.send ("You do not have permession to ban")
             
-    pass
+    # pass
 
         
         
