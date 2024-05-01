@@ -3,14 +3,17 @@ from discord import app_commands
 from discord.ext import commands
 from discord import Member
 from discord.ext.commands import has_permissions, MissingPermissions
+import typing
 
-class treeCMD(commands.Cog):
-    def __init__(self, bot: commands.bot):
+intents = discord.Intents.default()
+intents.message_content = True
+class Moderation(commands.Cog):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
     
     @commands.Cog.listener()
-    async def on_ready(self):
-       synced = await self.bot.tree.sync() 
+    async def on_ready():
+        print('Loaded??') 
     
     # Simple test command
     @app_commands.command(
@@ -20,27 +23,10 @@ class treeCMD(commands.Cog):
     async def first_command(self, interaction: discord.Interaction):
         await interaction.response.send_message("Hello!")
 
-    
-    # Purge Messages indiscriminately in a channel
-    @app_commands.command(
-        name="purgemsg",
-        description="A command that deletes a specified message",
-    )
-    @app_commands.describe(
-        amount="Amount of messages you want purged"
-    )
-
-    async def purge_command(self, interaction: discord.Interaction, amount: int, reason: str):
-        self.channel = interaction.channel
-        await interaction.response.send_message('Attempting to purge messages!', ephemeral=True)
-        dltMsgAmount = await self.channel.purge(limit=amount, reason=reason)
-        await interaction.followup.send(f'Deleted {len(dltMsgAmount)} Messages!', ephemeral=True)
-    
-
     # Public User Info      
     @app_commands.command(
         name='user_info', 
-        description='Get info of any user in this server'
+        description='Get info of any user in this server',
     )
     @app_commands.describe(
         user='select a user'
@@ -55,8 +41,26 @@ class treeCMD(commands.Cog):
         self.embed.add_field(name='Current status', value=user.status)
         self.embed.add_field(name='Server Join', value=user.joined_at)
         self.embed.add_field(name='Account age', value=user.created_at)
-        await interaction.response.send_message(embed=self.embed)
+        await interaction.followup.send(embed=self.embed)
+    
+    # Purge Messages indiscriminately in a channel
+    @app_commands.command(
+        name="purgemsg_1",
+        description="A command that deletes a specified message",
+    )
+    @app_commands.describe(
+        amount="Amount of messages you want purged"
+    )
+    @app_commands.describe(
+        reason='The Reason'
+    )
 
+    async def purge_command(self, interaction: discord.Interaction, amount: int, reason: str):
+        self.channel = interaction.channel
+        await interaction.response.send_message('Attempting to purge messages!', ephemeral=True)
+        dltMsgAmount = await self.channel.purge(limit=amount, reason=typing.Optional[app_commands.Choice[str]])
+        await interaction.followup.send(f'Deleted {len(dltMsgAmount)} Messages!', ephemeral=True)
+    
 
     # Ban command and stuff
     # @app_commands.command(name='ban', description='Ban a user')
@@ -73,6 +77,6 @@ class treeCMD(commands.Cog):
 
         
         
-async def setup(bot):
-    await bot.add_cog(treeCMD(bot))
+async def setup(bot) -> None:
+    await bot.add_cog(Moderation(bot))
     # await bot.add_cog('treeCMD') # only to remove class
