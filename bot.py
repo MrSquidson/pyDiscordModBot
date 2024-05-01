@@ -4,6 +4,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
+import typing
 
 option = app_commands.AppCommand.options
 
@@ -17,7 +18,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
+bot = commands.Bot(command_prefix="<<", intents=intents)
 
 # # Test cmd that comes with library
 # @bot.tree.command(
@@ -36,16 +37,23 @@ bot = commands.Bot(command_prefix="<<", intents=discord.Intents.all())
 async def sync(interaction: discord.Interaction):
     try:
         await interaction.response.send_message('Syncing...', ephemeral=True)
+        i = 0
         for filename in os.listdir('./COG'):
-            i = 0
             if filename.endswith('.py'):
                 i += 1
                 await bot.reload_extension(f'COG.{filename[:-3]}')
-                print(f'Synced {i} cog')
-                await interaction.followup.send(f'Synced {i} cogs! :D', ephemeral=True)
+                print(f'Syncing {filename}...')
+        print(f'Synced {i} cog')
+        try:
+            synced = await bot.tree.sync()
+            print(f'Synced {len(synced)} commands')
+        except Exception as e:
+            print(e)
+        await interaction.followup.send(f'Synced {i} cogs! :D', ephemeral=True)
     except:
         print(Exception)
         await interaction.followup.send('Syncing Failed :c', ephemeral=True)
+
 
 # DO NOT TOUCH, WE DON'T WHAT WE DID, BUT IT WORKS NOW!!!!!
 # Chooses one of the Random Activities(tm)
@@ -71,13 +79,14 @@ async def on_ready():
         if filename.endswith('.py'):
             i += 1
             await bot.load_extension(f'COG.{filename[:-3]}')
-            print(f'Synced {i} cog')
+            print(f'Loading COG.{filename[:-3]}...')
+    print(f"Loaded {i} cog's on startup!")
     print(f'Logged on as {bot.user}!')
-    # try:
-    #     synced = await bot.tree.sync()
-    #     print(f'Synced {len(synced)}')
-    # except Exception as e:
-    #     print(e)
+    try:
+        synced = await bot.tree.sync()
+        print(f'Synced {len(synced)}')
+    except Exception as e:
+        print(e)
 
 #Kør botten
 bot.run(TOKEN)
