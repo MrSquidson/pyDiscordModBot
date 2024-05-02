@@ -22,7 +22,7 @@ class ticket(commands.Cog):
     # Simple test command
     @app_commands.command(
         name="ticketscommandname",
-        description="My first application Command",
+        description="My first application Command"
 )
     async def first_command(self, interaction: discord.Interaction):
         await interaction.response.send_message("Hello!")
