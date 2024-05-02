@@ -16,8 +16,10 @@ import time
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.message_content = True
+intents.presences = True
+intents.members = True
 bot = commands.Bot(command_prefix="<<", intents=intents)
 
 # # Test cmd that comes with library
@@ -43,15 +45,14 @@ async def sync(interaction: discord.Interaction):
                 i += 1
                 await bot.reload_extension(f'COG.{filename[:-3]}')
                 print(f'Syncing {filename}...')
-        print(f'Synced {i} cog')
         try:
             synced = await bot.tree.sync()
-            print(f'Synced {len(synced)} commands')
+            print(f'Synced {i} cogs and {len(synced)} commands')
         except Exception as e:
             print(e)
-        await interaction.followup.send(f'Synced {i} cogs! :D', ephemeral=True)
-    except:
-        print(Exception)
+        await interaction.followup.send(f'Synced {i} cogs and {len(synced)} commands! :D', ephemeral=True)
+    except Exception as e:
+        print(e)
         await interaction.followup.send('Syncing Failed :c', ephemeral=True)
 
 
@@ -87,6 +88,14 @@ async def on_ready():
         print(f'Synced {len(synced)}')
     except Exception as e:
         print(e)
+
+@bot.event
+async def on_command_error(interaction: discord.Interaction, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await interaction.response.send_message('Please pass in all requirements :rolling_eyes:.')
+    if isinstance(error, commands.MissingPermissions):
+        await interaction.response.send_message("You dont have all the requirements :angry:")
+
 
 #Kør botten
 bot.run(TOKEN)
