@@ -4,7 +4,6 @@ from discord.ext import commands
 import csv
 from csv import DictWriter
 
-dbn = 'DB' #Name of Database folder
 
 class Database(commands.Cog):
     def __init__(self, bot: commands.bot):
@@ -17,13 +16,14 @@ class Database(commands.Cog):
         action = kwargs.get('action', None)
 
         field_names = ['modID', 'offenderID', 'timeStart', 'timeEnd', 'action']
-        filepath = os.path.expanduser(os.path.join('Documents',dbn, str(guildID)))
+        filepath = os.path.expanduser(os.path.join('DB', str(guildID)))
 
 
         if action == None:
             return 'ERR: No action specified'
 
         if not os.path.exists(os.path.join(filepath, 'punishments.csv')): # Hvis './DB/GuildID/punishments.csv' ikke findes
+            os.makedirs(filepath)
             with open((os.path.join(filepath, 'punishments.csv')),'w', newline='') as csvfile: #Opret ny csv fil
                 writer = csv.DictWriter(csvfile, fieldnames=field_names) # Med field_names i headeren (indsætter også header)
                 writer.writeheader()

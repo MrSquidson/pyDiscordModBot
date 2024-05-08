@@ -127,7 +127,7 @@ class Moderation(commands.Cog):
                    amount: typing.Optional[str]): 
         if amount == None:
             amount = datetime.timedelta(days=1)
-        await user.timed_out_until(amount)
+        await user.timeout(until=[str(amount), None], reason=reason)
         await interaction.response.send_message(f'{user} has been timed ouy until {amount+now()} for {reason}')
         print(amount)
           
