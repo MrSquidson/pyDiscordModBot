@@ -8,7 +8,7 @@ import typing
 
 option = app_commands.AppCommand.options
 
-
+dbname = 'DB'
 
 import time
 # I need a comment...
@@ -42,7 +42,7 @@ async def sync(interaction: discord.Interaction):
         i = 0
         for filename in os.listdir('./COG'):
             if filename.endswith('.py'):
-                i += 1
+                i += 1        
                 await bot.reload_extension(f'COG.{filename[:-3]}')
                 print(f'Syncing {filename}...')
         try:
@@ -77,7 +77,7 @@ async def on_ready():
     await randact()
     i = 0
     for filename in os.listdir('./COG'):
-        if filename.endswith('.py'):
+        if filename.endswith('.py'):            
             i += 1
             await bot.load_extension(f'COG.{filename[:-3]}')
             print(f'Loading COG.{filename[:-3]}...')

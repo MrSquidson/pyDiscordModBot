@@ -1,18 +1,27 @@
 import os
 import discord
+from discord.ext import commands
 import csv
 from csv import DictWriter
 
+dbn = 'DB' #Name of Database folder
 
-class Database:
-    filepath = os.path.join('./DB', discord.Guild.id)
+class Database(commands.Cog):
+    def __init__(self, bot: commands.bot):
+        self.bot = bot
 
-    def __init__(self) -> None:
-        #Laver en filepath til brug senere
-        pass
+    async def modAction(guildID:int, modID:int, *args, **kwargs):
+        offenderID = kwargs.get('offenderID', 'None Given')
+        timeStart = kwargs.get('timeStart', None)
+        timeEnd = kwargs.get('timeEnd', None)
+        action = kwargs.get('action', None)
 
-    def modAction(self, filepath, guildID:int, modID:int, offenderID:int, timeStart:int, timeEnd:int, action:str):
         field_names = ['modID', 'offenderID', 'timeStart', 'timeEnd', 'action']
+        filepath = os.path.expanduser(os.path.join('Documents',dbn, str(guildID)))
+
+
+        if action == None:
+            return 'ERR: No action specified'
 
         if not os.path.exists(os.path.join(filepath, 'punishments.csv')): # Hvis './DB/GuildID/punishments.csv' ikke findes
             with open((os.path.join(filepath, 'punishments.csv')),'w', newline='') as csvfile: #Opret ny csv fil
@@ -27,3 +36,5 @@ class Database:
                 dictwriter_object.writerow({modID, offenderID, timeStart, timeEnd, action}) # Skriv den nye case ind i filen
                 print('Appended most recent case')
 
+async def setup(bot) -> None:
+     await bot.add_cog(Database(bot))

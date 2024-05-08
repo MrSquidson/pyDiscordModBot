@@ -2,12 +2,18 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from discord import Member
+import datetime
 from discord.ext.commands import has_permissions, MissingPermissions
 import typing
+from COG.botDatabase import Database
+
+
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.presences = True
+
+now = datetime.datetime.now()
 
 class Moderation(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -61,6 +67,11 @@ class Moderation(commands.Cog):
         self.channel = interaction.channel
         await interaction.response.send_message('Attempting to purge messages!', ephemeral=True)
         dltMsgAmount = await self.channel.purge(limit=amount, reason=reason)
+        print('Trying to save Purgemsg to log #db')
+        # try:
+        await Database.modAction(guildID=discord.Guild.id, modID=interaction.user.id, action=f'Deleted {amount} messages in {interaction.channel}')
+        # except:
+        #    print('Failed to send data to #db') 
         await interaction.followup.send(f'Deleted {len(dltMsgAmount)} Messages!', ephemeral=True)
     
 
@@ -103,10 +114,31 @@ class Moderation(commands.Cog):
         except Exception as e:
             print(e)
             await interaction.response.send_message(f'Cannot kick user, {e}') 
+    
+    
+    # Timeout command
+    @app_commands.command(name='timeout', description='timeout a user')
+    @app_commands.describe(user='User you are timing out',
+                            amount='How long should the timeout last?',
+                            reason='Reason the user is getting timed out')
+    async def mute(self, interaction: discord.Interaction, 
+                   user: Member, 
+                   reason: typing.Optional[str], 
+                   amount: typing.Optional[str]): 
+        if amount == None:
+            amount = datetime.timedelta(days=1)
+        await user.timed_out_until(amount)
+        await interaction.response.send_message(f'{user} has been timed ouy until {amount+now()} for {reason}')
+        print(amount)
           
-
-        
-        
+          
+    #    try:
+    #        await user.timed_out_until(reason=reason)
+    #        await interaction.response.send_message(f'User {user} has been timedout with the reason: \n "{reason}"')
+    #    except Exception as e:
+    #        print(e)
+    #        await interaction.response.send_message(f'Cannot timeout user, {e}') 
+    
 async def setup(bot) -> None:
     await bot.add_cog(Moderation(bot))
     # await bot.add_cog('treeCMD') # only to remove class

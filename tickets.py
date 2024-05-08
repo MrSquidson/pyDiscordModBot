@@ -1,13 +1,11 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from discord import Member
-from discord.ext.commands import has_permissions, MissingPermissions
 import os
 import csv
-from csv import DictWriter
+from bot import dbname
 
-filepath = (str(os.path.join('./DB', str(discord.Guild.id), '/tickets')))
+filepath = os.path.expanduser(str(os.path.join(dbname, str(discord.Guild.id), 'tickets')))
 ticCat = (str(os.path.join(filepath, 'ticCat.txt')))
 ticketLogs = (str(os.path.join(filepath, 'ticketLogs.txt')))
 
@@ -35,7 +33,7 @@ class ticket(commands.Cog):
             )
     @app_commands.checks.has_permissions(administrator=True)
     async def ticCat(self, category:int, interaction: discord.Interaction):
-        filepath = str(os.path.join('./DB', discord.Guild.id, '/tickets'))
+        filepath = str(os.path.join(dbname, discord.Guild.id, '/tickets'))
         with open((str(os.path.join(filepath, 'ticCat.txt'))), 'w') as txtfile: # Writes or Overwrites a txtfile with the Category id
             txtfile.write(category)
             txtfile.close()
