@@ -6,14 +6,14 @@ import datetime
 from discord.ext.commands import has_permissions, MissingPermissions
 import typing
 from COG.botDatabase import Database
-
+import re
 
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.presences = True
 
-now = datetime.datetime.now()
+
 
 class Moderation(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -41,12 +41,13 @@ class Moderation(commands.Cog):
     )
 
     async def userinfo(self, interaction: discord.Interaction, user: Member):
+        userstatus = interaction.guild.get_member(user.id).status
         embed = discord.Embed(title=f"User Info about {user}")
         embed.set_thumbnail(url=user.avatar.url)
         embed.set_author(name=f'Authored by {interaction.user}', icon_url=interaction.user.avatar.url)
         embed.set_footer(text=f'Discord @ {user}')
         embed.add_field(name='UserID', value=user.id, inline=True)
-        embed.add_field(name='Current status', value=user.raw_status, inline=True)
+        embed.add_field(name='Current status', value=userstatus, inline=True)
         embed.add_field(name='Server Join', value=user.joined_at.strftime("%B %d %Y"), inline=True)
         embed.add_field(name='Account age', value=user.created_at.strftime("%B %d %Y"), inline=True)
         await interaction.response.send_message(embed=embed)
@@ -69,7 +70,7 @@ class Moderation(commands.Cog):
         dltMsgAmount = await self.channel.purge(limit=amount, reason=reason)
         print('Trying to save Purgemsg to log #db')
         # try:
-        await Database.modAction(guildID=discord.Guild.id, modID=interaction.user.id, action=f'Deleted {amount} messages in {interaction.channel}')
+        # await Database.modAction(guildID=discord.Guild.id, modID=interaction.user.id, action=f'Deleted {amount} messages in {interaction.channel}')
         # except:
         #    print('Failed to send data to #db') 
         await interaction.followup.send(f'Deleted {len(dltMsgAmount)} Messages!', ephemeral=True)
@@ -119,26 +120,40 @@ class Moderation(commands.Cog):
     # Timeout command
     @app_commands.command(name='timeout', description='timeout a user')
     @app_commands.describe(user='User you are timing out',
-                            amount='How long should the timeout last?',
+                            time='Length of time is: d=Days | h=Hours | m=Minutes | s=Seconds',
                             reason='Reason the user is getting timed out')
     async def mute(self, interaction: discord.Interaction, 
                    user: Member, 
                    reason: typing.Optional[str], 
-                   amount: typing.Optional[str]): 
-        if amount == None:
-            amount = datetime.timedelta(days=1)
-        await user.timeout(until=[str(amount), None], reason=reason)
-        await interaction.response.send_message(f'{user} has been timed ouy until {amount+now()} for {reason}')
-        print(amount)
-          
-          
-    #    try:
-    #        await user.timed_out_until(reason=reason)
-    #        await interaction.response.send_message(f'User {user} has been timedout with the reason: \n "{reason}"')
-    #    except Exception as e:
-    #        print(e)
-    #        await interaction.response.send_message(f'Cannot timeout user, {e}') 
-    
+                   time: typing.Optional[str]): 
+        now = datetime.datetime.now()
+        if time == None or "":
+            duration = datetime.timedelta(days=1)
+        # Using regex, find all the times the letters [dhms] are used
+        matches = re.findall(r'(\d+)([dhms])',time)
+        # Open empty var
+        total_seconds = 0
+        # Manipulate the var to return an amount of seconds
+        if matches:
+            for value, unit in matches:
+                if unit == 'd':
+                    total_seconds += int(value) * 24 * 3600
+                elif unit == 'h':
+                    total_seconds += int(value) * 3600
+                elif unit == 'm':
+                    total_seconds += int(value) * 60
+                elif unit == 's':
+                    total_seconds += int(value)
+            # Convert the var to seconds
+            duration = datetime.timedelta(seconds=total_seconds)
+            # Timeout user using the timedelta str
+            await user.timeout(duration, reason=reason)
+            # Create unix timestamp for userfriendly-ness  
+            unix_timestamp = int((now + duration).timestamp())
+            # Send msg informing mod that the action has been taken
+            await interaction.response.send_message(f'{user} has been timed out until the <t:{unix_timestamp}> for {reason}')
+            print(f'User input was {time}')
+            
 async def setup(bot) -> None:
     await bot.add_cog(Moderation(bot))
     # await bot.add_cog('treeCMD') # only to remove class
