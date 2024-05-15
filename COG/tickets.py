@@ -3,9 +3,8 @@ from discord import app_commands
 from discord.ext import commands
 import os
 import csv
-from bot import dbname
 
-filepath = os.path.expanduser(str(os.path.join(dbname, str(discord.Guild.id), 'tickets')))
+filepath = os.path.expanduser(os.path.join('Documents\GitHub\pyDicordModBot\DB', str(discord.Guild.id), 'tickets'))
 ticCat = (str(os.path.join(filepath, 'ticCat.txt')))
 ticketLogs = (str(os.path.join(filepath, 'ticketLogs.txt')))
 
@@ -32,10 +31,15 @@ class ticket(commands.Cog):
             description='Set the Ticket Category'
             )
     @app_commands.checks.has_permissions(administrator=True)
-    async def ticCat(self, category:int, interaction: discord.Interaction):
-        filepath = str(os.path.join(dbname, discord.Guild.id, '/tickets'))
-        with open((str(os.path.join(filepath, 'ticCat.txt'))), 'w') as txtfile: # Writes or Overwrites a txtfile with the Category id
-            txtfile.write(category)
+    async def ticCat(self, interaction: discord.Interaction,category:str):
+        # Update the Guild ID in the DB path for current call
+        filepath = os.path.expanduser(os.path.join('Documents\GitHub\pyDicordModBot\DB', str(discord.Guild.id), 'tickets'))
+        ticCat = (str(os.path.join(filepath, 'ticCat.txt')))
+
+        # Open the ticket Category txt file in writing mode
+        with open(ticCat, 'w') as txtfile: # Writes or Overwrites a txtfile with the Category id
+            # Write the called category ID into the document
+            txtfile.write(str(category))
             txtfile.close()
 
         # Sets up a log for tickets in the Database if it doesn't exist
@@ -55,8 +59,11 @@ class ticket(commands.Cog):
             name='openticket', 
             description='Opens a ticket'
             )
-    async def openTicket(ticCat,ticketLogs, interaction: discord.Interaction):
-        guild = discord.guild.id 
+    async def openTicket(self, interaction: discord.Interaction):
+        guild = discord.Guild.id 
+        filepath = os.path.expanduser(os.path.join('Documents\GitHub\pyDicordModBot\DB', str(discord.Guild.id), 'tickets'))
+        ticCat = (str(os.path.join(filepath, 'ticCat.txt')))
+
         if (os.path.exists(os.path.join(filepath, 'ticCat.txt'))) != True:
             await interaction.followup.send('Error! Missing Ticket Category... Please add a ticket category through /ticketCat', ephemeral=True)
         else:
@@ -89,5 +96,5 @@ class ticket(commands.Cog):
             )
             await interaction.followup.send(f'Opened Ticket!')
 
-    async def setup(bot) -> None:
-        await bot.add_cog(ticket(bot))
+async def setup(bot) -> None:
+    await bot.add_cog(ticket(bot))
