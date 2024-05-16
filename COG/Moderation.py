@@ -68,9 +68,10 @@ class Moderation(commands.Cog):
         self.channel = interaction.channel
         await interaction.response.send_message('Attempting to purge messages!', ephemeral=True)
         dltMsgAmount = await self.channel.purge(limit=amount, reason=reason)
+        guildID = discord.Guild.id
         print('Trying to save Purgemsg to log #db')
         # try:
-        await Database.modAction(guildID=(discord.Guild.id), modID=interaction.user.id, action=f'Deleted {amount} messages in {interaction.channel}')
+        await Database.modAction(guildID=guildID, modID=interaction.user.id, action=f'Deleted {amount} messages in {interaction.channel}')
         # except:
         #    print('Failed to send data to #db') 
         await interaction.followup.send(f'Deleted {len(dltMsgAmount)} Messages!', ephemeral=True)

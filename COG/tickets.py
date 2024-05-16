@@ -42,6 +42,8 @@ class ticket(commands.Cog):
         ticCat = (str(os.path.join(filepath, 'ticCat.txt')))
 
         # Open the ticket Category txt file in writing mode
+        if os.path.exists(ticCat) == False:
+            open(ticCat,'x')
         with open(ticCat, 'w') as txtfile: # Writes or Overwrites a txtfile with the Category id
             # Write the called category ID into the document
             txtfile.write(str(category))
@@ -49,6 +51,7 @@ class ticket(commands.Cog):
 
         # Sets up a log for tickets in the Database if it doesn't exist
         if (os.path.exists(os.path.join(filepath, 'ticketLogs.csv'))) != True:
+            open(os.path.join(filepath, 'ticketLogs.csv'),'x')
             with open(str(os.path.join(filepath, 'ticketLogs.csv')),'w', newline='') as csvfile:
                 field_names = ['UserID', 'ticketID', 'Action', 'Reason']
                 writer = csv.DictWriter(csvfile, fieldnames=field_names) # Med field_names i headeren (indsætter også header)

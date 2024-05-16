@@ -26,7 +26,8 @@ class Database(commands.Cog):
         if action == None:
             return 'ERR: No action specified'
 
-        if not os.path.exists(filepath + '/punishments.csv'): # Hvis './DB/GuildID/punishments.csv' ikke findes
+        if not os.path.exists(filepath + '/punishments.csv'): # Hvis './DB/GuildID/punishments.csv' ikke 
+            open(filepath+'/punishments.csv','x')
             with open((os.path.join(filepath, 'punishments.csv')),'w', newline='') as csvfile: #Opret ny csv fil
                 writer = csv.DictWriter(csvfile, fieldnames=field_names) # Med field_names i headeren (indsætter også header)
                 writer.writeheader()
