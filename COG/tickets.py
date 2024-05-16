@@ -11,6 +11,10 @@ ticketLogs = (str(os.path.join(filepath, 'ticketLogs.txt')))
 class ticket(commands.Cog):
     def __init__(self, bot: commands.bot):
         self.bot = bot
+
+    async def filepathExists(filepath):
+        if os.path.exists(filepath) != True:
+            os.makedirs(filepath)
     
     @commands.Cog.listener()
     async def on_ready(self):
@@ -33,7 +37,8 @@ class ticket(commands.Cog):
     @app_commands.checks.has_permissions(administrator=True)
     async def ticCat(self, interaction: discord.Interaction,category:str):
         # Update the Guild ID in the DB path for current call
-        filepath = os.path.expanduser(os.path.join('Documents\GitHub\pyDicordModBot\DB', str(discord.Guild.id), 'tickets'))
+        filepath = os.path.expanduser(os.path.join('DB', str(discord.Guild.id), 'tickets'))
+        ticket.filepathExists(filepath=filepath)
         ticCat = (str(os.path.join(filepath, 'ticCat.txt')))
 
         # Open the ticket Category txt file in writing mode
