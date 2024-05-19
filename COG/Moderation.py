@@ -102,7 +102,7 @@ class Moderation(commands.Cog):
     @has_permissions(administrator = True)
     async def unban(self, interaction: discord.Interaction, user: Member, reason: typing.Optional[str]):
         try:
-            await user.ban(reason=reason)
+            await user.unban(reason=reason)
             await interaction.response.send_message(f'User {user} has been unbanned with the reason: \n "{reason}"')
         except Exception as e:
             print(e)
