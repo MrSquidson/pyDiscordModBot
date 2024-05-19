@@ -69,10 +69,10 @@ class Moderation(commands.Cog):
         await interaction.response.send_message('Attempting to purge messages!', ephemeral=True)
         dltMsgAmount = await self.channel.purge(limit=amount, reason=reason)
         print('Trying to save Purgemsg to log #db')
-        # try:
-        # await Database.modAction(guildID=discord.Guild.id, modID=interaction.user.id, action=f'Deleted {amount} messages in {interaction.channel}')
-        # except:
-        #    print('Failed to send data to #db') 
+        try:
+            await Database.modAction(guildID=discord.Guild.id, modID=interaction.user.id, action=f'Deleted {amount} messages in {interaction.channel}')
+        except:
+            print('Failed to send data to #db') 
         await interaction.followup.send(f'Deleted {len(dltMsgAmount)} Messages!', ephemeral=True)
     
 
@@ -97,7 +97,7 @@ class Moderation(commands.Cog):
     @has_permissions(administrator = True)
     async def unban(self, interaction: discord.Interaction, user: Member, reason: typing.Optional[str]):
         try:
-            await user.ban(reason=reason)
+            await user.unban(reason=reason)
             await interaction.response.send_message(f'User {user} has been unbanned with the reason: \n "{reason}"')
         except Exception as e:
             print(e)
