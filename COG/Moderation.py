@@ -12,6 +12,7 @@ import re
 intents = discord.Intents.default()
 intents.message_content = True
 intents.presences = True
+client = discord.Client(intents=intents)
 
 
 
@@ -25,11 +26,12 @@ class Moderation(commands.Cog):
     
     # Simple test command
     @app_commands.command(
-        name="commandname",
+        name="guildid",
         description="My first application Command",
 )
     async def first_command(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Hello!")
+     #   guild = discord.utils.get(client.guilds)
+        await interaction.response.send_message(f"Hello {interaction.guild.name}!\nThis is your guildID {interaction.guild.id}")
 
     # Public User Info      
     @app_commands.command(
@@ -68,7 +70,9 @@ class Moderation(commands.Cog):
         self.channel = interaction.channel
         await interaction.response.send_message('Attempting to purge messages!', ephemeral=True)
         dltMsgAmount = await self.channel.purge(limit=amount, reason=reason)
-        guildID = discord.Guild.id
+        print('Attempting to make the guildID a var')
+        guildID = interaction.guild.id
+        print(f'Guild ID is: {guildID}')
         print('Trying to save Purgemsg to log #db')
         # try:
         await Database.modAction(guildID=guildID, modID=interaction.user.id, action=f'Deleted {amount} messages in {interaction.channel}')
