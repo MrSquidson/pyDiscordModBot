@@ -28,6 +28,8 @@ class ticket(commands.Cog):
     async def first_command(self, interaction: discord.Interaction):
         await interaction.response.send_message("Hello!")
 
+
+
     
     # Set ticket category
     @app_commands.command(
@@ -37,8 +39,11 @@ class ticket(commands.Cog):
     @app_commands.checks.has_permissions(administrator=True)
     async def ticCat(self, interaction: discord.Interaction,category:str):
         # Update the Guild ID in the DB path for current call
-        filepath = os.path.expanduser(os.path.join('DB', str(discord.Guild.id), 'tickets'))
-        ticket.filepathExists(filepath=filepath)
+        current_dir = os.getcwd()
+        filepath = os.path.expanduser(os.path.join(current_dir, 'DB', str(interaction.guild.id), 'tickets'))
+        os.makedirs(filepath)
+        if ticket.filepathExists(filepath=filepath) != True:
+            print(f'\n\nFailed to setup filepath for guild: {interaction.guild.name} \n Filepath used: {filepath} \n Guild ID: {interaction.guild.id}\n\n')
         ticCat = (str(os.path.join(filepath, 'ticCat.txt')))
 
         # Open the ticket Category txt file in writing mode
@@ -69,10 +74,10 @@ class ticket(commands.Cog):
             )
     async def openTicket(self, interaction: discord.Interaction):
         guild = discord.Guild.id 
-        filepath = os.path.expanduser(os.path.join('Documents\GitHub\pyDicordModBot\DB', str(discord.Guild.id), 'tickets'))
+        filepath = os.path.expanduser(os.path.join('DB', str(interaction.guild.id), 'tickets'))
         ticCat = (str(os.path.join(filepath, 'ticCat.txt')))
 
-        if (os.path.exists(os.path.join(filepath, 'ticCat.txt'))) != True:
+        if (os.path.exists(ticCat)) != True:
             await interaction.followup.send('Error! Missing Ticket Category... Please add a ticket category through /ticketCat', ephemeral=True)
         else:
             await interaction.followup.send('Attempting to open a ticket...')
